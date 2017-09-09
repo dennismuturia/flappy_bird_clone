@@ -5,11 +5,18 @@ var mainState = {
         // That's where we load the images and sounds
         game.load.image('bird', 'assets/bird.png');
         game.load.image('pipe', 'assets/pipe.png');
+        game.load.audio('jump', 'assets/jump.wav');
+
     },
 
     create: function() {
         // This function is called after the preload function
         // Here we set up the game, display sprites, etc.
+
+
+       //Jump sound
+        this.jumpSound = game.add.audio('jump');
+
 
         //change background color to blue
         game.stage.backgroundColor = '#71c5cf';
@@ -39,6 +46,9 @@ var mainState = {
         //score counter
         this.score = 0;
         this.labelScore = game.add.text(20, 20, "0", { font: "30px Arial", fill: "#ffffff" });
+
+        // Move the anchor to the left and downward
+         this.bird.anchor.setTo(-0.2, 0.5);
     },
 
 //creates single pipe
@@ -80,12 +90,42 @@ var mainState = {
         //If the bird is out of the screen(too high or low), call the 'restartGame' function
         if (this.bird.y < 0 || this.bird.y > 490)
         this.restartGame();
-        game.physics.arcade.overlap(this.bird, this.pipes, this.restartGame, null, this);
-    },
+        game.physics.arcade.overlap(this.bird, this.pipes, this.hitPipe, null, this);
+        //adding angle to the bird
+        if (this.bird.angle < 20)
+          this.bird.angle += 1;
+          },
+
+      hitPipe: function() {
+        // If the bird has already hit a pipe, do nothing
+        // It means the bird is already falling off the screen
+        if (this.bird.alive == false)
+            return;
+
+           // Set the alive property of the bird to false
+            this.bird.alive = false;
+
+              // Prevent new pipes from appearing
+            game.time.events.remove(this.timer);
+
+            // Go through all the pipes, and stop their movement
+            this.pipes.forEach(function(p){
+                p.body.velocity.x = 0;
+            }, this);
+      },
+
 
     jump: function() {
+      if (this.bird.alive == false)
+          return;
       // Add a vertical velocity to the bird
       this.bird.body.velocity.y = -350;
+
+      //Adding an animation on the bird after 100 mliseconds to chane its angle at -20 degrees
+      game.add.tween(this.bird).to({angle: -20}, 100).start();
+
+      this.jumpSound.play();
+
     },
 
 // Restart the Game
