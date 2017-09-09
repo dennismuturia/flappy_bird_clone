@@ -3,9 +3,10 @@ var mainState = {
     preload: function() {
         // This function will be executed at the beginning
         // That's where we load the images and sounds
-        game.load.image('bird', 'assets/bird.png');
+        game.load.image('bird', 'assets/flap.png');
         game.load.image('pipe', 'assets/pipe.png');
         game.load.audio('jump', 'assets/jump.wav');
+        game.load.audio('boo', 'assets/boo.wav');
 
     },
 
@@ -13,13 +14,14 @@ var mainState = {
         // This function is called after the preload function
         // Here we set up the game, display sprites, etc.
 
-
        //Jump sound
         this.jumpSound = game.add.audio('jump');
 
+        //Fail sound(Hit pipe)
+        this.booSound = game.add.audio('boo');
 
-        //change background color to blue
-        game.stage.backgroundColor = '#71c5cf';
+        //change background color to white
+        game.stage.backgroundColor = '#ffffff';
 
         //set Physics system
         game.physics.startSystem(Phaser.Physics.ARCADE);
@@ -45,7 +47,7 @@ var mainState = {
 
         //score counter
         this.score = 0;
-        this.labelScore = game.add.text(20, 20, "0", { font: "30px Arial", fill: "#ffffff" });
+        this.labelScore = game.add.text(50, 50, "0", { font: "30px Roboto", fill: "#000000 " });
 
         // Move the anchor to the left and downward
          this.bird.anchor.setTo(-0.2, 0.5);
@@ -105,6 +107,8 @@ var mainState = {
            // Set the alive property of the bird to false
             this.bird.alive = false;
 
+            this.booSound.play();
+
               // Prevent new pipes from appearing
             game.time.events.remove(this.timer);
 
@@ -112,6 +116,7 @@ var mainState = {
             this.pipes.forEach(function(p){
                 p.body.velocity.x = 0;
             }, this);
+
       },
 
 
@@ -142,4 +147,4 @@ game.state.add('main', mainState);
 
 // Start the state to actually start the game
 game.state.start('main');
-console.log("yoh");
+console.log("Made with love by: Kahara");
